@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import {
   BarChart2,
-  DollarSign,
+  PackagePlus,
   Menu,
   Settings,
   ShoppingBag,
   ShoppingCart,
   TrendingUp,
   Users,
+
+  Sparkles,
+
   LogIn,
   LogOut,
+
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
@@ -29,18 +33,22 @@ const PUBLIC_ITEMS = [
     color: "#6366f1",
     href: "/",
   },
+
+  { name: "Users", icon: Users, color: "#EC4899", href: "/users" },
+
 ];
 
 // Items accessible only to authenticated users (excluding logout)
 const PROTECTED_ITEMS = [
+
   {
     name: "Products",
     icon: ShoppingBag,
     color: "#8B5CF6",
     href: "/products",
   },
-  { name: "Users", icon: Users, color: "#EC4899", href: "/users" },
-  { name: "Sales", icon: DollarSign, color: "#10B981", href: "/sales" },
+  { name: "Category", icon: PackagePlus, color: "#10B981", href: "/category" },
+  { name: "Brands", icon: Sparkles, color: "#FED766", href: "/brands" },
   { name: "Orders", icon: ShoppingCart, color: "#F59E0B", href: "/orders" },
   { name: "Analytics", icon: TrendingUp, color: "#3B82F6", href: "/analytics" },
   { name: "Settings", icon: Settings, color: "#6EE7B7", href: "/settings" },
