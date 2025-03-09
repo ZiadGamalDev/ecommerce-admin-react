@@ -31,17 +31,8 @@ function AppRoutes() {
         <div className="absolute inset-0 backdrop-blur-sm" />
       </div>
 
-      <Sidebar/>
-     <Routes>
-        <Route path="/" element={<OverviewPage />} />
-        <Route path="/products" element={<ProductsPage />} />
-        <Route path="/users" element={<UsersPage />} />
-        <Route path="/category" element={<CategoryPage />} />
-        <Route path="/brands" element={<BrandsPage/>}/>
-        <Route path="/orders" element={<OrdersPage />} />
-        <Route path="/analytics" element={<AnalyticsPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-     </Routes>
+     
+     
 
 
       {/* Only show sidebar on non-login pages */}
