@@ -4,13 +4,14 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { motion } from 'framer-motion'
 // import ResponsiveContainer from "recharts"
 import * as Yup from "yup";
+import {useAuth} from "../../Context/Auth.context";
 
 const AddCategoryForm = () => {
   const [Loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-
+  const {token}=useAuth()
   // define validation schema
   const validationSchema = Yup.object({
     name: Yup.string()
@@ -55,7 +56,7 @@ const AddCategoryForm = () => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `accesstoken_${localStorage.getItem("token")}`,
+            Authorization: `accesstoken_${token}`,
           },
         }
       );

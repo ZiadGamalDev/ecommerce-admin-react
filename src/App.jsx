@@ -14,7 +14,7 @@ import BrandsPage from "./Pages/BrandsPage"
 import {  useLocation } from "react-router-dom";
 import { AuthProvider } from "./Context/Auth.context";
 import ProtectedRoute from "./Components/protectedRouter";
-import SalesPage from "./Pages/SalesPage";
+// import SalesPage from "./Pages/SalesPage";
 import LoginPage from "./Pages/LoginPage";
 
 
@@ -76,14 +76,7 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/sales"
-          element={
-            <ProtectedRoute>
-              <SalesPage />
-            </ProtectedRoute>
-          }
-        />
+        
         <Route
           path="/orders"
           element={
