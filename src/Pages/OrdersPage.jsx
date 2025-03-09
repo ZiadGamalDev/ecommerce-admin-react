@@ -1,8 +1,8 @@
 import { CheckCircle, Clock, DollarSign, ShoppingBag } from "lucide-react";
 import { motion } from "framer-motion";
 
-import {Header} from "../Components/common/Header";
-import {StatCard} from "../Components/common/StatCard";
+import { Header } from "../Components/common/Header";
+import { StatCard } from "../Components/common/StatCard";
 import DailyOrders from "../Components/orders/DailyOrders";
 import OrderDistribution from "../Components/orders/OrderDistribution";
 import OrdersTable from "../Components/orders/OrdersTable";

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Plus, X, Upload, Star } from "lucide-react";
 import axios from "axios";
+import { useAuth } from "../../Context/Auth.context";
 
 const ProductForm = ({ product, onSubmit, onCancel }) => {
   const isEditMode = !!product;
@@ -9,22 +10,27 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [submitSuccess, setSubmitSuccess] = useState(null);
+  const { token } = useAuth(); // Fixed: Properly destructure token from useAuth
+
+  const headers = {
+    "Content-Type": "multipart/form-data",
+    accesstoken: `accesstoken_${token}`, // Fixed: Use the token directly
+  };
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     categoryId: "",
     brandId: "",
-    basePrice: "",
-    oldPrice: "",
-    isFeatured: false,
+    basePrice: "", // Fixed: Changed from baseprice to basePrice to match validation schema
     stock: "",
     discountType: "percentage",
     discountValue: "0",
-    rating: 0,
     images: [],
-    rams: "",
   });
+
+  // Store file objects for upload
+  const [imageFiles, setImageFiles] = useState([]);
 
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
@@ -58,14 +64,10 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
         description: product.description || "",
         categoryId: product.category?._id || "",
         brandId: product.brand?._id || "",
-        basePrice: product.basePrice || "",
-        appliedPrice: product.appliedPrice || "",
-        isFeatured: product.isFeatured || false,
+        basePrice: product.basePrice || "", // Fixed: Consistent casing for basePrice
         stock: product.stock || "",
         discountType: product.discount?.type || "percentage",
         discountValue: product.discount?.value || "0",
-        rams: product.specs?.ram || "",
-        rating: product.rate || 0,
         images: product.images || [],
       });
     }
@@ -79,6 +81,42 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
     validateField(name, newValue);
   };
 
+  // Handle image upload
+  const handleImageUpload = (e) => {
+    setUploading(true);
+    const files = Array.from(e.target.files);
+
+    if (files.length === 0) {
+      setUploading(false);
+      return;
+    }
+
+    // Create temporary preview URLs for display
+    const fileObjects = files.map((file) => ({
+      _id: Date.now() + Math.random().toString(36).substring(2, 9), // Generate unique ID for preview
+      secure_url: URL.createObjectURL(file),
+      file: file, // Store the file object for later upload
+    }));
+
+    // Add new files to state
+    setImageFiles([...imageFiles, ...files]);
+    setFormData((prev) => ({
+      ...prev,
+      images: [...prev.images, ...fileObjects],
+    }));
+
+    // Clear the image error if it exists
+    if (errors.images) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.images;
+        return newErrors;
+      });
+    }
+
+    setUploading(false);
+  };
+
   const validateField = (name, value) => {
     let newErrors = { ...errors };
     switch (name) {
@@ -90,7 +128,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
           newErrors.title = "Title cannot exceed 100 characters";
         else delete newErrors.title;
         break;
-      case "basePrice":
+      case "basePrice": // Fixed: Changed from baseprice to basePrice
         if (!value) newErrors.basePrice = "Base price is required";
         else if (Number(value) <= 0)
           newErrors.basePrice = "Base price must be a positive number";
@@ -150,7 +188,9 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
       newErrors.title = "Title must be at least 3 characters long";
     else if (formData.title.length > 100)
       newErrors.title = "Title cannot exceed 100 characters";
-    if (!formData.basePrice) newErrors.basePrice = "Base price is required";
+    if (!formData.basePrice)
+      newErrors.basePrice =
+        "Base price is required"; // Fixed: Consistent naming
     else if (Number(formData.basePrice) <= 0)
       newErrors.basePrice = "Base price must be a positive number";
     if (formData.stock === "") newErrors.stock = "Stock quantity is required";
@@ -171,21 +211,45 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
       newErrors.description = "Description must be at least 10 characters long";
     if (!formData.categoryId) newErrors.categoryId = "Category is required";
     if (!formData.brandId) newErrors.brandId = "Brand is required";
-    if (formData.images.length === 0)
+
+    // Validate images only if not in edit mode or if existing images were removed
+    if (
+      (!isEditMode || (isEditMode && formData.images.length === 0)) &&
+      imageFiles.length === 0
+    ) {
       newErrors.images = "At least one product image is required";
+    }
+
     setTouched(newTouched);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleRemoveImage = (imageId) => {
+    // Remove from formData.images
     const updatedImages = formData.images.filter((img) => img._id !== imageId);
+
+    // If it's a new image (with file property), also remove from imageFiles
+    const removedImage = formData.images.find((img) => img._id === imageId);
+    if (removedImage && removedImage.file) {
+      const updatedImageFiles = imageFiles.filter(
+        (file) =>
+          !formData.images.find(
+            (img) => img._id === imageId && img.file === file
+          )
+      );
+      setImageFiles(updatedImageFiles);
+    }
+
     setFormData({ ...formData, images: updatedImages });
-    if (updatedImages.length === 0)
+
+    // Set error if no images left
+    if (updatedImages.length === 0) {
       setErrors({
         ...errors,
         images: "At least one product image is required",
       });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -197,52 +261,92 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
         firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
+
     setIsSubmitting(true);
     setSubmitError(null);
     setSubmitSuccess(null);
+
     try {
       const productData = new FormData();
+
+      // Add text fields to FormData
       Object.keys(formData).forEach((key) => {
-        if (key !== "images") productData.append(key, formData[key]);
+        if (key !== "images") {
+          // Fixed: Convert basePrice to baseprice for API compatibility
+          if (key === "basePrice") {
+            productData.append("baseprice", formData[key]);
+          } else {
+            productData.append(key, formData[key]);
+          }
+        }
       });
-      formData.images.forEach((image) => productData.append("files", image));
+
+      // Add images to FormData
+      if (isEditMode) {
+        // For edit mode, we need to handle both existing and new images
+        // For existing images that were not created in this session
+        formData.images.forEach((image) => {
+          if (!image.file && image.public_id) {
+            // This is an existing image from the server
+            productData.append(
+              "existingImages",
+              JSON.stringify({
+                _id: image._id,
+                public_id: image.public_id,
+                secure_url: image.secure_url,
+              })
+            );
+          }
+        });
+
+        // Add new files
+        imageFiles.forEach((file) => {
+          productData.append("files", file);
+        });
+
+        // If editing an image, pass the oldPublicId
+        if (formData.oldPublicId) {
+          productData.append("oldPublicId", formData.oldPublicId);
+        }
+      } else {
+        // For create mode, just add all files
+        imageFiles.forEach((file) => {
+          productData.append("files", file);
+        });
+      }
+
       let response;
       if (isEditMode) {
         response = await axios.put(
           `http://localhost:3000/product/${product._id}`,
           productData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
+          { headers }
         );
       } else {
         response = await axios.post(
           `http://localhost:3000/product/${formData.categoryId}/${formData.brandId}`,
           productData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
+          { headers }
         );
       }
+
       setSubmitSuccess(
         isEditMode
           ? "Product updated successfully!"
           : "Product created successfully!"
       );
+
       if (onSubmit) onSubmit(response.data.data);
     } catch (error) {
       console.error("Error submitting product:", error);
+      console.log("Error response data:", error.response?.data);
       setSubmitError(
-        error.response?.data?.message ||
+        error.response?.data?.error_message ||
           "An error occurred while saving the product. Please try again."
       );
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false); // Fixed: Set isSubmitting to false in finally block to ensure it's reset even on error
     }
-  };
-
-  const handleRatingChange = (newRating) => {
-    setFormData({ ...formData, rating: newRating });
   };
 
   const handleBlur = (e) => {
@@ -253,7 +357,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto">
-      <h2 className="text-xl font-semibold mb-6">
+      <h2 className="text-xl text-black font-semibold mb-6">
         {isEditMode ? "Update Product" : "Product Upload"}
       </h2>
       <form onSubmit={handleSubmit}>
@@ -286,7 +390,9 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
 
         {/* Basic Information */}
         <div className="bg-white rounded-lg p-6 mb-6 border border-gray-200">
-          <h3 className="text-lg font-medium mb-6">Basic Information</h3>
+          <h3 className="text-lg text-black font-medium mb-6">
+            Basic Information
+          </h3>
           <div className="mb-4">
             <label className="block text-gray-700 uppercase text-xs font-medium mb-2">
               Product Name
@@ -301,7 +407,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
                 touched.title && errors.title
                   ? "border-red-500"
                   : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              } rounded-md focus:outline-none text-black focus:ring-2 focus:ring-blue-500`}
             />
             {touched.title && errors.title && (
               <p className="text-red-500 text-xs mt-1 error-message">
@@ -323,7 +429,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
                 touched.description && errors.description
                   ? "border-red-500"
                   : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              } rounded-md focus:outline-none  text-black focus:ring-2 focus:ring-blue-500`}
             />
             {touched.description && errors.description && (
               <p className="text-red-500 text-xs mt-1 error-message">
@@ -345,7 +451,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
                   touched.categoryId && errors.categoryId
                     ? "border-red-500"
                     : "border-gray-300"
-                } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                } rounded-md focus:outline-none  text-black focus:ring-2 focus:ring-blue-500`}
               >
                 <option value="">Select Category</option>
                 {categories.map((category) => (
@@ -373,7 +479,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
                   touched.brandId && errors.brandId
                     ? "border-red-500"
                     : "border-gray-300"
-                } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                } rounded-md focus:outline-none text-black focus:ring-2 focus:ring-blue-500`}
               >
                 <option value="">Select Brand</option>
                 {brands.map((brand) => (
@@ -396,7 +502,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
               </label>
               <input
                 type="number"
-                name="basePrice"
+                name="basePrice" // Fixed: Consistent naming
                 value={formData.basePrice}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -404,7 +510,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
                   touched.basePrice && errors.basePrice
                     ? "border-red-500"
                     : "border-gray-300"
-                } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                } rounded-md focus:outline-none  text-black focus:ring-2 focus:ring-blue-500`}
               />
               {touched.basePrice && errors.basePrice && (
                 <p className="text-red-500 text-xs mt-1 error-message">
@@ -412,34 +518,8 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
                 </p>
               )}
             </div>
-            <div>
-              <label className="block text-gray-700 uppercase text-xs font-medium mb-2">
-                Old Price
-              </label>
-              <input
-                type="number"
-                name="oldPrice"
-                value={formData.oldPrice}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-gray-700 uppercase text-xs font-medium mb-2">
-                Is Featured
-              </label>
-              <select
-                name="isFeatured"
-                value={formData.isFeatured}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value={false}>No</option>
-                <option value={true}>Yes</option>
-              </select>
-            </div>
             <div>
               <label className="block text-gray-700 uppercase text-xs font-medium mb-2">
                 Product Stock
@@ -454,7 +534,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
                   touched.stock && errors.stock
                     ? "border-red-500"
                     : "border-gray-300"
-                } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                } rounded-md focus:outline-none text-black focus:ring-2 focus:ring-blue-500`}
               />
               {touched.stock && errors.stock && (
                 <p className="text-red-500 text-xs mt-1 error-message">
@@ -477,7 +557,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
                   touched.discountType && errors.discountType
                     ? "border-red-500"
                     : "border-gray-300"
-                } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                } rounded-md focus:outline-none text-black focus:ring-2 focus:ring-blue-500`}
               >
                 <option value="percentage">Percentage (%)</option>
                 <option value="fixed">Fixed Amount</option>
@@ -503,7 +583,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
                   touched.discountValue && errors.discountValue
                     ? "border-red-500"
                     : "border-gray-300"
-                } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                } rounded-md focus:outline-none text-black focus:ring-2 focus:ring-blue-500`}
               />
               {touched.discountValue && errors.discountValue && (
                 <p className="text-red-500 text-xs mt-1 error-message">
@@ -511,53 +591,14 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
                 </p>
               )}
             </div>
-            <div>
-              <label className="block text-gray-700 uppercase text-xs font-medium mb-2">
-                Product RAM
-              </label>
-              <select
-                name="rams"
-                value={formData.rams}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Select RAM</option>
-                <option value="4GB">4GB</option>
-                <option value="8GB">8GB</option>
-                <option value="16GB">16GB</option>
-                <option value="32GB">32GB</option>
-              </select>
-            </div>
-          </div>
-          {/* Ratings */}
-          <div className="mt-6">
-            <label className="block text-gray-700 uppercase text-xs font-medium mb-2">
-              Ratings
-            </label>
-            <div className="flex space-x-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() => handleRatingChange(star)}
-                  className="focus:outline-none"
-                >
-                  <Star
-                    className={`h-6 w-6 ${
-                      star <= formData.rating
-                        ? "text-yellow-400 fill-yellow-400"
-                        : "text-gray-300"
-                    }`}
-                  />
-                </button>
-              ))}
-            </div>
           </div>
         </div>
 
         {/* Media and Published */}
         <div className="bg-white rounded-lg p-6 mb-6 border border-gray-200">
-          <h3 className="text-lg font-medium mb-6">Media And Published</h3>
+          <h3 className="text-lg font-medium text-black mb-6">
+            Media And Published
+          </h3>
           <div className="flex flex-wrap gap-4 mb-2">
             {formData.images.map((image) => (
               <div
@@ -594,15 +635,16 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
                     errors.images ? "text-red-500" : "text-gray-500"
                   }`}
                 >
-                  Image upload
+                  {uploading ? "Uploading..." : "Image upload"}
                 </span>
               </div>
               <input
                 type="file"
                 accept="image/*"
                 className="hidden"
-                // onChange={handleImageUpload}
+                onChange={handleImageUpload}
                 disabled={uploading}
+                multiple
               />
             </label>
           </div>
