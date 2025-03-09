@@ -3,10 +3,11 @@ import OverviewPage from "./Pages/OverviewPage"
 import ProductsPage from "./Pages/ProductsPage"
 import Sidebar from "./Components/common/Sidebar"
 import UsersPage from "./Pages/UsersPage"
-import SalesPage from "./Pages/SalesPage"
 import OrdersPage from "./Pages/OrdersPage"
 import AnalyticsPage from "./Pages/AnalyticsPage"
 import SettingsPage from "./Pages/SettingsPage"
+import CategoryPage from "./Pages/CategoryPage"
+import BrandsPage from "./Pages/BrandsPage"
 
 
 
@@ -27,7 +28,8 @@ function App() {
         <Route path="/" element={<OverviewPage />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/users" element={<UsersPage />} />
-        <Route path="/sales" element={<SalesPage />} />
+        <Route path="/category" element={<CategoryPage />} />
+        <Route path="/brands" element={<BrandsPage/>}/>
         <Route path="/orders" element={<OrdersPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
