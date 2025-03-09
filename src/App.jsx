@@ -11,18 +11,12 @@ import CategoryPage from "./Pages/CategoryPage"
 import BrandsPage from "./Pages/BrandsPage"
 
 // src/App.jsx
-import { Route, Routes, useLocation } from "react-router-dom";
+import {  useLocation } from "react-router-dom";
 import { AuthProvider } from "./Context/Auth.context";
 import ProtectedRoute from "./Components/protectedRouter";
-import OverviewPage from "./Pages/OverviewPage";
-import ProductsPage from "./Pages/ProductsPage";
-import UsersPage from "./Pages/UsersPage";
 import SalesPage from "./Pages/SalesPage";
-import OrdersPage from "./Pages/OrdersPage";
-import AnalyticsPage from "./Pages/AnalyticsPage";
-import SettingsPage from "./Pages/SettingsPage";
 import LoginPage from "./Pages/LoginPage";
-import Sidebar from "./Components/common/Sidebar";
+
 
 
 function AppRoutes() {
@@ -48,7 +42,7 @@ function AppRoutes() {
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
      </Routes>
-=======
+
 
       {/* Only show sidebar on non-login pages */}
       {!isLoginPage && <Sidebar />}
