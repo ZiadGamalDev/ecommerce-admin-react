@@ -9,12 +9,10 @@ import AnalyticsPage from "./Pages/AnalyticsPage"
 import SettingsPage from "./Pages/SettingsPage"
 import CategoryPage from "./Pages/CategoryPage"
 import BrandsPage from "./Pages/BrandsPage"
-
 // src/App.jsx
 import {  useLocation } from "react-router-dom";
 import { AuthProvider } from "./Context/Auth.context";
 import ProtectedRoute from "./Components/protectedRouter";
-// import SalesPage from "./Pages/SalesPage";
 import LoginPage from "./Pages/LoginPage";
 
 
@@ -64,6 +62,30 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <UsersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/products"
+          element={
+            <ProtectedRoute>
+              <ProductsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/category"
+          element={
+            <ProtectedRoute>
+              <CategoryPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/brands"
+          element={
+            <ProtectedRoute>
+              <BrandsPage />
             </ProtectedRoute>
           }
         />
