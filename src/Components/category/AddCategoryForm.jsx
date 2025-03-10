@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { motion } from 'framer-motion'
-// import ResponsiveContainer from "recharts"
 import * as Yup from "yup";
 import {useAuth} from "../../Context/Auth.context";
 
@@ -12,6 +11,8 @@ const AddCategoryForm = () => {
   const [success, setSuccess] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const {token}=useAuth()
+  console.log(token);
+
   // define validation schema
   const validationSchema = Yup.object({
     name: Yup.string()
@@ -56,11 +57,13 @@ const AddCategoryForm = () => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `accesstoken_${token}`,
+            accesstoken: `accesstoken_${token}`,
           },
         }
+
       );
       setSuccess(response.data.message);
+      
       resetForm();
       setImagePreview(null);
     } catch (error) {
@@ -70,11 +73,26 @@ const AddCategoryForm = () => {
       setLoading(false);
     }
   };
+  if (Loading) {
+    return (
+      <motion.div
+        className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700 mb-8 flex justify-center items-center h-64"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        <div className="text-gray-300">Loading Form...</div>
+      </motion.div>
+    );
+  }
   return (
-    <motion.div className="max-w-full mx-auto backdrop-blur-md bg-gray-800 p-6 rounded-lg shadow-md"
+    <motion.div className="max-w-full mx-auto bg-gray-800 bg-opacity-50 backdrop-blur-md overflow-hidden shadow-lg rounded-xl p-6 border border-gray-700"
     initial={{ opacity: 0, y:20 }}
     animate={{ opacity: 1 , y:0}}
-    transition={{ delay: 0.0001 }}>
+    transition={{
+      delay: 0.2, 
+      duration: 0.6,
+      ease: "easeOut", 
+    }}>
       <h2 className="text-2xl font-bold mb-6">Add New Category</h2>
       {error && (
         <div className="bg-red-100 text-red-700 p-2 mb-4 rounded">{error}</div>
