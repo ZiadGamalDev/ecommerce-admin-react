@@ -160,7 +160,7 @@ const AddCategoryForm = () => {
                   errors.image && touched.image ? "border-red-500" : ""
                 }`}
               />
-              {!touched.image && !imagePreview && (
+              {touched.image && !imagePreview && (
                 <p className="mt-1 text-sm text-red-500">image is required</p>
               )}
               {imagePreview && (
