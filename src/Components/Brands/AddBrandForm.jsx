@@ -201,7 +201,7 @@ const AddBrandForm = () => {
               errors.logo && touched.logo ? "border-red-500" : ""
             }`}
           />
-          {!touched.logo && !imagePreview && (
+          {touched.logo && !imagePreview && (
             <p className="mt-1 text-sm text-red-500">image is required</p>
           )}
           {imagePreview && (
