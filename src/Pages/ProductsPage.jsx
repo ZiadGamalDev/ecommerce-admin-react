@@ -9,7 +9,7 @@ import {
   DollarSign,
   Plus,
 } from "lucide-react";
-import CategoryDistributionChart from "../components/overview/CategoryDistributionChart";
+import CategoryDistributionChart from "../Components/overview/CategoryDistributionChart";
 import SalesTrendChart from "../Components/products/salesChart";
 import ProductsTable from "../Components/products/productsTable";
 import ProductForm from "../Components/products/productForm";
