@@ -14,7 +14,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
   const [submitSuccess, setSubmitSuccess] = useState(null);
   const [uploading, setUploading] = useState(false);
 
-  // Use the custom hook instead of direct context
+  
   const { token, logout } = useAuth();
 
   // Define validation schema with Yup
