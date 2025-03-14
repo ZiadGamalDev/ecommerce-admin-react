@@ -122,7 +122,7 @@ const CategoryPage = () => {
      <div className='flex-1 overflow-auto relative z-10'>
           <Header title="Category"/>
           <main className='max-w-7xl mx-auto py-6 px-4  lg:px-8'>
-            <AddCategoryForm success={success} imagePreview={imagePreview} token={token} error={error} initialValues={initialValues} handleSubmit={handleSubmit} handleImageChange={handleImageChange} setImagePreview={setImagePreview} setError={setError} setSuccess={setSuccess} />
+            <AddCategoryForm success={success} imagePreview={imagePreview} token={token} error={error} initialValues={initialValues} handleSubmit={handleSubmit} handleImageChange={handleImageChange} setImagePreview={setImagePreview} setError={setError} setSuccess={setSuccess} validationSchema={validationSchema} />
             {/* passing stats to child components */}
             <CategoryTable categories={categories} filteredCategories={filteredCategories} searchTerm={searchTerm} handleSearch={handleSearch} />
             </main>
