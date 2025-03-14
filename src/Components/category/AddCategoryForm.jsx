@@ -5,85 +5,20 @@ import { motion } from 'framer-motion'
 import * as Yup from "yup";
 import {useAuth} from "../../Context/Auth.context";
 
-const AddCategoryForm = () => {
-  const [Loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
-  const {token}=useAuth()
-  console.log(token);
-
-  // define validation schema
-  const validationSchema = Yup.object({
-    name: Yup.string()
-      .required("category name is required")
-      .min(3, "category name must be at least 3 characters")
-      .max(50, "category name must be at most 50 characters"),
-    description: Yup.string().max(
-      500,
-      "category description must not exceed 500 characters"
-    ),
-    isActive: Yup.boolean(),
-  });
-  const initialValues = {
-    name: "",
-    description: "",
-    isActive: true,
-    image: null,
-  };
-  const handleImageChange = (event, setFieldValue) => {
-    const file = event.currentTarget.files[0];
-    setFieldValue("image", file);
-    if (file) {
-      setImagePreview(URL.createObjectURL(file));
-    } else {
-      setImagePreview(null);
-    }
-  };
-  const handleSubmit = async (values, { resetForm }) => {
-    try {
-      setLoading(true);
-      setError(null);
-      setSuccess(null);
-      const formData = new FormData();
-      formData.append("name", values.name);
-      if (values.description)
-        formData.append("description", values.description);
-      formData.append("isActive", values.isActive);
-      if (values.image) formData.append("image", values.image);
-      const response = await axios.post(
-        "http://localhost:3000/category/",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            accesstoken: `accesstoken_${token}`,
-          },
-        }
-
-      );
-      setSuccess(response.data.message);
-      
-      resetForm();
-      setImagePreview(null);
-    } catch (error) {
-      console.error("Error while creating category", error);
-      setError(error.response.data.error_message);
-    } finally {
-      setLoading(false);
-    }
-  };
-  if (Loading) {
-    return (
-      <motion.div
-        className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700 mb-8 flex justify-center items-center h-64"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        <div className="text-gray-300">Loading Form...</div>
-      </motion.div>
-    );
-  }
+const AddCategoryForm = ({success , imagePreview , token , error , initialValues , validationSchema , handleSubmit , handleImageChange , setImagePreview , setError , setSuccess}) => {
+ 
+  
+  // if (Loading) {
+  //   return (
+  //     <motion.div
+  //       className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700 mb-8 flex justify-center items-center h-64"
+  //       initial={{ opacity: 0 }}
+  //       animate={{ opacity: 1 }}
+  //     >
+  //       <div className="text-gray-300">Loading Form...</div>
+  //     </motion.div>
+  //   );
+  // }
   return (
     <motion.div className="max-w-full mx-auto bg-gray-800 bg-opacity-50 backdrop-blur-md overflow-hidden shadow-lg rounded-xl p-6 border border-gray-700"
     initial={{ opacity: 0, y:20 }}

@@ -4,7 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { motion } from 'framer-motion';
 import * as Yup from "yup";
 import { useAuth } from "../../Context/Auth.context";
-import { useParams } from "react-router-dom";
+
 
 const AddBrandForm = () => {
   const [Loading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ const AddBrandForm = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/category/");
+        const response = await axios.get("https://e-commerce-api-tau-five.vercel.app/category/");
         setCategories(response.data.data);
       } catch (error) {
         console.error("Error fetching categories", error);
@@ -73,7 +73,7 @@ const AddBrandForm = () => {
       
 
       const response = await axios.post(
-        `http://localhost:3000/brand/${selectedCategoryId}`,
+        `https://e-commerce-api-tau-five.vercel.app/brand/${selectedCategoryId}`,
         formData,
         {
           headers: {

@@ -67,7 +67,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
   const getAuthHeaders = () => ({
     accesstoken: `accesstoken_${token}`,
   });
-  console.log(getAuthHeaders());
+  // console.log(getAuthHeaders());
 
   // Handle unauthorized responses
   const handleUnauthorized = (error) => {
@@ -94,10 +94,10 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
     const fetchData = async () => {
       try {
         const [categoriesResponse, brandsResponse] = await Promise.all([
-          axios.get("http://localhost:3000/category/", {
+          axios.get("https://e-commerce-api-tau-five.vercel.app/category/", {
             headers: getAuthHeaders(),
           }),
-          axios.get("http://localhost:3000/brand/", {
+          axios.get("https://e-commerce-api-tau-five.vercel.app/brand/", {
             headers: getAuthHeaders(),
           }),
         ]);
@@ -160,7 +160,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
       let response;
       if (isEditMode) {
         response = await axios.put(
-          `http://localhost:3000/product/${product._id}`,
+          `https://e-commerce-api-tau-five.vercel.app/product/${product._id}`,
           productData,
           {
             headers: {
@@ -171,7 +171,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
         );
       } else {
         response = await axios.post(
-          `http://localhost:3000/product/${values.categoryId}/${values.brandId}`,
+          `hhttps://e-commerce-api-tau-five.vercel.app/product/${values.categoryId}/${values.brandId}`,
           productData,
           {
             headers: {

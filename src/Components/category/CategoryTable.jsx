@@ -5,55 +5,23 @@ import { Search , Edit , Trash2 , Eye } from 'lucide-react'
 import { Hourglass } from 'react-loader-spinner'
 
 
-const CategoryTable = () => {
-  const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [filteredCategories, setFilteredCategories] = useState([])
-  useEffect(()=>{
-    const fetchCategories = async ()=>{
-      try {
-        const response = await axios.get("http://localhost:3000/category/")
-        setCategories(response.data.data)
-        setFilteredCategories(response.data.data)
-        setLoading(false)
-        console.log(response.data);
-        
-
-      } catch (error) {
-        setError( " Failed to Fetch Categories",error)
-        setLoading(false)
-        console.error("Error Fetching Categories",error)
-        
-      }
-    }
-    fetchCategories()
-  },[])
-
-  const handleSearch = (e)=>{
-    const term = e.target.value
-    setSearchTerm(term)
-
- const filtered = categories.filter(category => category.name.toLowerCase().includes(term.toLowerCase()))
-  setFilteredCategories(filtered)
+const CategoryTable = ({categories , filteredCategories , searchTerm , handleSearch}) => {
+  
+  // if(loading){
+  //   return (<Hourglass
+  //     visible={true}
+  //     height="80"
+  //     width="80"
+  //     ariaLabel="hourglass-loading"
+  //     wrapperStyle={{}}
+  //     wrapperClass=""
+  //     colors={['#306cce', '#72a1ed']}
+  //     />)
     
-  }
-  if(loading){
-    return (<Hourglass
-      visible={true}
-      height="80"
-      width="80"
-      ariaLabel="hourglass-loading"
-      wrapperStyle={{}}
-      wrapperClass=""
-      colors={['#306cce', '#72a1ed']}
-      />)
-    
-  }
-  if(error){
-    return <div className=' text-red-500'>Error: {error}</div>
-  }
+  // }
+  // if(error){
+  //   return <div className=' text-red-500'>Error: {error}</div>
+  // }
   return (
     <motion.div
     initial={{ opacity: 0, y:20 }}
@@ -106,7 +74,7 @@ const CategoryTable = () => {
              
             </td>
             <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
-              { category.brands.map((brand)=>{
+              { category?.brands?.map((brand)=>{
                 return (
                   <span key={brand._id} className='mr-2'>{brand.name}</span>
                 )
