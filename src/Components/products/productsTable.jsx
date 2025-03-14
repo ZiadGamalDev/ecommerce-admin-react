@@ -14,7 +14,7 @@ const ProductsTable = ({ onEditProduct }) => {
   const fetchProducts = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get("http://localhost:3000/product/");
+      const response = await axios.get("https://e-commerce-api-tau-five.vercel.app/product/");
       if (response.data.success && Array.isArray(response.data.data)) {
         setProducts(response.data.data);
         setFilteredProducts(response.data.data);
@@ -51,7 +51,7 @@ const ProductsTable = ({ onEditProduct }) => {
       return;
     try {
       const response = await axios.delete(
-        `http://localhost:3000/product/${productId}`
+        `https://e-commerce-api-tau-five.vercel.app/product/${productId}`
       );
       if (response.data.success) fetchProducts();
     } catch (err) {

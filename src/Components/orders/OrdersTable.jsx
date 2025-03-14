@@ -21,10 +21,10 @@ const OrdersTable = () => {
     const fetchOrders = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("http://localhost:3000/order/", {
+        const response = await axios.get("https://e-commerce-api-tau-five.vercel.app/order/", {
           headers: getAuthHeaders(),
         });
-        console.log("API Response:", response.data); // Debug log
+        // console.log("API Response:", response.data); // Debug log
 
         // Check if response.data is an array
         const ordersData = Array.isArray(response.data)
@@ -35,7 +35,7 @@ const OrdersTable = () => {
             // If it's a single order object, wrap it in an array
             (response.data._id ? [response.data] : []);
 
-        console.log("Processed Orders:", ordersData); // Debug log
+        // console.log("Processed Orders:", ordersData); // Debug log
 
         setOrders(ordersData);
         setFilteredOrders(ordersData);
@@ -78,7 +78,7 @@ const OrdersTable = () => {
   const handleViewOrder = async (orderId) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/order/${orderId}`,
+        `hthttps://e-commerce-api-tau-five.vercel.app/order/${orderId}`,
         {
           headers: getAuthHeaders(),
         }

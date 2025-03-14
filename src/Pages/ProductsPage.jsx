@@ -21,7 +21,7 @@ const ProductsPage = () => {
 
   const handleToggleForm = (e) => {
     if (e) e.preventDefault();
-    console.log("Toggling form. Current state:", showProductForm); // Debug log
+    // console.log("Toggling form. Current state:", showProductForm); // Debug log
     setShowProductForm(!showProductForm);
     if (showProductForm) {
       setSelectedProduct(null);
@@ -29,7 +29,7 @@ const ProductsPage = () => {
   };
 
   const handleEditProduct = (product) => {
-    console.log("Editing product:", product); // Debug log
+    // console.log("Editing product:", product); // Debug log
     setSelectedProduct(product);
     setShowProductForm(true);
   };
