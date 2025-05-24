@@ -28,7 +28,7 @@ export default function LogIn() {
       
       // First, check if user exists and get their role
       const userResponse = await axios.get(
-        `https://e-commerce-api-tau-five.vercel.app/profile/${values.email}`
+        `${import.meta.env.VITE_API_URL}/profile/${values.email}`
       );
       
       const userData = userResponse.data.data;
@@ -41,7 +41,7 @@ export default function LogIn() {
       
       // If user is admin, proceed with login
       let { data } = await axios.post(
-        `https://e-commerce-api-tau-five.vercel.app/auth/login`,
+        `${import.meta.env.VITE_API_URL}/auth/login`,
         values
       );
 

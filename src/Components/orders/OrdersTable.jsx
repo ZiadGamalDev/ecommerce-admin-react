@@ -21,7 +21,7 @@ const OrdersTable = () => {
     const fetchOrders = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("https://e-commerce-api-tau-five.vercel.app/order/", {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/order/`, {
           headers: getAuthHeaders(),
         });
         // console.log("API Response:", response.data); // Debug log
@@ -78,7 +78,7 @@ const OrdersTable = () => {
   const handleViewOrder = async (orderId) => {
     try {
       const response = await axios.get(
-        `hthttps://e-commerce-api-tau-five.vercel.app/order/${orderId}`,
+        `${import.meta.env.VITE_API_URL}/order/${orderId}`,
         {
           headers: getAuthHeaders(),
         }

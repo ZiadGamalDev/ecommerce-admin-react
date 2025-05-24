@@ -94,10 +94,10 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
     const fetchData = async () => {
       try {
         const [categoriesResponse, brandsResponse] = await Promise.all([
-          axios.get("https://e-commerce-api-tau-five.vercel.app/category/", {
+          axios.get(`${import.meta.env.VITE_API_URL}/category/`, {
             headers: getAuthHeaders(),
           }),
-          axios.get("https://e-commerce-api-tau-five.vercel.app/brand/", {
+          axios.get(`${import.meta.env.VITE_API_URL}/brand/`, {
             headers: getAuthHeaders(),
           }),
         ]);
@@ -160,7 +160,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
       let response;
       if (isEditMode) {
         response = await axios.put(
-          `https://e-commerce-api-tau-five.vercel.app/product/${product._id}`,
+          `${import.meta.env.VITE_API_URL}/product/${product._id}`,
           productData,
           {
             headers: {
@@ -171,7 +171,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
         );
       } else {
         response = await axios.post(
-          `hhttps://e-commerce-api-tau-five.vercel.app/product/${values.categoryId}/${values.brandId}`,
+          `${import.meta.env.VITE_API_URL}/product/${values.categoryId}/${values.brandId}`,
           productData,
           {
             headers: {

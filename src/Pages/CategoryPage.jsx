@@ -19,7 +19,7 @@ const CategoryPage = () => {
     useEffect(()=>{
       const fetchCategories = async ()=>{
         try {
-          const response = await axios.get("https://e-commerce-api-tau-five.vercel.app/category/")
+          const response = await axios.get(`${import.meta.env.VITE_API_URL}/category/`)
           setCategories(response.data.data)
           setFilteredCategories(response.data.data)
           setLoading(false)
@@ -94,7 +94,7 @@ const CategoryPage = () => {
       formData.append("isActive", values.isActive);
       if (values.image) formData.append("image", values.image);
       const response = await axios.post(
-        "https://e-commerce-api-tau-five.vercel.app/category/",
+        `${import.meta.env.VITE_API_URL}/category/`,
         formData,
         {
           headers: {
