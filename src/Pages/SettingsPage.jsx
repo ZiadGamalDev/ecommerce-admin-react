@@ -2,7 +2,7 @@ import {Header} from "../Components/common/Header";
 import ConnectedAccounts from "../Components/settings/ConnectedAccounts";
 import DangerZone from "../Components/settings/DangerZone";
 import Notifications from "../Components/settings/Notifications";
-import Profile from "../Components/settings/profile";
+import Profile from "../Components/settings/Profile";
 import Security from "../Components/settings/Security";
 
 const SettingsPage = () => {
