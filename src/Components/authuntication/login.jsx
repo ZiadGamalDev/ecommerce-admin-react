@@ -25,27 +25,23 @@ export default function LogIn() {
   async function checkUserRoleAndLogin(values) {
     try {
       setApiError(null);
-      
-      // First, check if user exists and get their role
-      const userResponse = await axios.get(
-        `${import.meta.env.VITE_API_URL}/profile/${values.email}`
+      const baseUrl = import.meta.env.VITE_API_URL;
+      console.log("Values", values);
+      // Send email and password in the body to login endpoint
+      const { data } = await axios.post(
+        `${baseUrl}/auth/login`,
+        {
+          email: values.email,
+          password: values.password,
+        }
       );
-      
-      const userData = userResponse.data.data;
-      
-      // Check if user is admin
-      if (userData.role !== 'admin') {
+
+      console.log("Response data:", data.data);
+      if (!data.data.role || data.data.role !== 'admin') {
         setApiError("Access denied. Only administrators can login.");
         return;
       }
-      
-      // If user is admin, proceed with login
-      let { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/auth/login`,
-        values
-      );
 
-      // console.log(data);
       if (data.data.token) {
         login(data.data.token);
         navigate("/");
