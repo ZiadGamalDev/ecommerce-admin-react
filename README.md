@@ -5,8 +5,9 @@ Part of the ITI Graduation Project's **Customer Support System**.
 
 ## 🌐 Live Demo
 
-- **Production App:** https://ecommerce-admin-react.vercel.app/
-- **Backend API:** https://ecommerce-api.ziadgamal.com/
+- **Production App:** https://ecommerce-admin.ziadgamal.com
+- **Backend API:** https://ecommerce-api.ziadgamal.com
+- **Legacy Vercel:** https://ecommerce-admin-react.vercel.app (redirects to new domain)
 
 ---
 
@@ -67,7 +68,6 @@ This admin dashboard provides:
 - Full Stack Store Frontend: [E-Commerce React](https://github.com/ZiadGamalDev/ecommerce-react)
 - Live Chat System: [Customer Support Node](https://github.com/ZiadGamalDev/customer-support-node)
 - 👉 [View Root Repository](https://github.com/ZiadGamalDev/customer-support-system)
-
 
 ---
 
