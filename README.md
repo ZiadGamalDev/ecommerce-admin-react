@@ -6,7 +6,7 @@ Part of the ITI Graduation Project's **Customer Support System**.
 ## 🌐 Live Demo
 
 - **Production App:** https://ecommerce-admin-react.vercel.app/
-- **Backend API:** https://ecommerce-node.dinamo-app.com/
+- **Backend API:** https://ecommerce-api.ziadgamal.com/
 
 ---
 
@@ -42,7 +42,7 @@ Part of the ITI Graduation Project's **Customer Support System**.
    VITE_API_URL=http://localhost:3001
    
    # For production (.env.production)  
-   VITE_API_URL=https://ecommerce-node.dinamo-app.com
+   VITE_API_URL=https://ecommerce-api.ziadgamal.com
    ```
 
 4. Run the app:
